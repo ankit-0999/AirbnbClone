@@ -1,0 +1,190 @@
+<% layout('layout/boilerplate') %>
+
+    <body>
+        <div class="container mt-5">
+            <div class="card listing-card shadow-lg p-4">
+                <!-- Listing Image with responsive image classes -->
+                <img src="<%= listing.image ? listing.image.url :
+             '/default-image.jpg' %>" class="card-img-top mb-3 img-fluid" alt="Listing Image">
+
+                <div class="card-body">
+                    <h3 class="card-title text-center text-primary mb-3">
+                        <%= listing.title %>
+                    </h3>
+                    <p class="card-text text-muted mb-3">
+                        <%= listing.description %>
+                    </p>
+
+                    <ul class="list-group list-group-flush mb-4">
+                        <li class="list-group-item">
+                            <strong>Owner:</strong>
+                            <%= listing.owner.username %>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Price:</strong> &#8377; <%= listing.price %>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Location:</strong>
+                            <%= listing.location %>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Country:</strong>
+                            <%= listing.country %>
+                        </li>
+                    </ul>
+
+                    <!-- Edit and Delete Buttons -->
+                    <% if(currUser && listing.owner._id.equals(currUser._id)){ %>
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="/listings/<%= listing._id %>/edit" class="btn btn-warning">Edit Listing</a>
+                            <form action="/listings/<%= listing._id %>?_method=DELETE" method="post">
+                                <button type="submit" class="btn btn-danger">Delete Listing</button>
+                            </form>
+                        </div>
+                        <% } %>
+
+
+                            <hr>
+
+                            <div>
+
+
+
+
+                                <h4>Leave a Review</h4>
+                                <p>Rating...</p>
+                                <form action="/listings/<%= listing._id %>/reviews" method="post" novalidate
+                                    class="needs-validation">
+
+                                    <!-- ⭐ Star Rating Selection (Fix Name to match backend) -->
+                                    <fieldset class="starability-slot">
+                                        <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]"
+                                            value="0" checked aria-label="No rating." />
+                                        <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+                                        <label for="first-rate1" title="Terrible">1 star</label>
+                                        <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                                        <label for="first-rate2" title="Not good">2 stars</label>
+                                        <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                                        <label for="first-rate3" title="Average">3 stars</label>
+                                        <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                                        <label for="first-rate4" title="Very good">4 stars</label>
+                                        <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                                        <label for="first-rate5" title="Amazing">5 stars</label>
+                                    </fieldset>
+
+                                    <!-- ✅ Remove the conflicting range input -->
+                                    <!-- <input type="range" min="1" max="5" id="rating" name="review[rating]" class="form-control"> -->
+
+                                    <!-- ✅ Comment Section -->
+                                    <div class="mb-3 mt-4">
+                                        <label for="comm" class="form-label">Comments</label>
+                                        <textarea name="review[comments]" id="comm" cols="30" rows="10"
+                                            class="form-control" required></textarea>
+                                        <div class="invalid-feedback">Please add a comment for the review.</div>
+                                    </div>
+
+                                    <button class="btn btn-outline-success">Submit Review</button>
+                                </form>
+
+
+                            </div>
+                            <hr>
+
+                            <!-- Show the review -->
+
+                            <div class="row ms-3 ">
+                                <h3>All Reviews</h3>
+                                <% for (let review of listing.reviews) { %>
+                                    <div class="card border col-5 ms-4 mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Posted By: @<%= review.author.username %>
+                                            </h5>
+
+                                            <!-- ⭐ Corrected Star Rating Display -->
+                                            <p class="starability-result card-text" data-rating="<%= review.rating %>">
+                                            </p>
+
+                                            <p><strong>Comment:</strong>
+                                                <%= review.comments %>
+                                            </p>
+
+                                            <!-- Delete Review Button -->
+                                            <form
+                                                action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE"
+                                                method="post" class="mb-3">
+                                                <button class="btn btn-sm btn-dark">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <% } %>
+                            </div>
+
+                </div>
+                <hr>
+                <div class="flex justify-center items-center mb-3 card-body text-center">
+                    <h1>Where you’ll be</h1>
+                    
+                    <div class="flex justify-center items-center text-center">
+                        <iframe class="w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] xl:h-[700px] rounded-lg shadow-lg"
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d130010.94930426255!2d85.05394283650672!3d25.606494227193956!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f29937c52d4f05%3A0x831a0e05f607b270!2sPatna%2C%20Bihar!5e0!3m2!1sen!2sin!4v1743514927245!5m2!1sen!2sin"
+                            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </dic>
+                </div>
+
+
+            </div>
+        </div>
+
+        <script>
+            (function () {
+                'use strict';
+                var forms = document.querySelectorAll('.needs-validation');
+                Array.prototype.slice.call(forms).forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            })();
+        </script>
+
+        <!-- Custom CSS for image size adjustment -->
+        <style>
+            /* For mobile screens (max-width: 576px) */
+            @media (max-width: 346px) {
+                .card-img-top {
+                    width: 8rem;
+                    height: 15rem;
+                }
+            }
+
+            @media (min-width: 346px) and (max-width: 576px) {
+                .card-img-top {
+                    width: 10rem;
+                    height: 23rem;
+                }
+            }
+
+            /* For tablets and small desktops */
+            @media (min-width: 576px) and (max-width: 768px) {
+                .card-img-top {
+                    width: 25rem;
+                    height: 25rem;
+                    margin: 0 auto;
+                }
+            }
+
+            /* For larger screens */
+            @media (min-width: 1245px) {
+                .card-img-top {
+                    width: 25rem;
+                    height: 25rem;
+                }
+            }
+        </style>
+    </body>
